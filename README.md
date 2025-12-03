@@ -8,6 +8,7 @@ Use form to submit review, store reviews in MongoDB, look up review from name or
 -   Name
 -   Book Name
 - Home Page
+- Post for lookup information (template)
 
 
 ## What needs to be done:
@@ -21,5 +22,5 @@ Use form to submit review, store reviews in MongoDB, look up review from name or
 # Lookup Review Page
 -   Pull reviews from MongoDB
 -   Create and fill out template html page
--   Movie title and related information
+-   Book title and related information from Google Books API
 -   
