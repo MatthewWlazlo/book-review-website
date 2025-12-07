@@ -7,6 +7,7 @@ const { name } = require('ejs');
 require("dotenv").config();
 const mongoose = require('mongoose');
 const Book = require('./models/book');
+const Book = require('./models/review');
 
 const portNumber = process.argv[2];
 const app = express();
@@ -25,17 +26,7 @@ mongoose.connect('mongodb://localhost:27017/CMSC335DB')
 
 
 app.post("/submit_review", (req, res) =>{
-    const { name, email, title, author, published, summary, review } = req.body;
-    compTime = new Date().toString();
-    time = `Task completed at ${compTime}`;
+    const search = req.body;
 
-    const book_review = {
-        name: name,
-        email: email,
-        title: title,
-        author: author,
-        published: published,
-        summary: summary,
-        review: review
-    }
+    if ()
 });
