@@ -1,5 +1,5 @@
 /*
-schema that represents a movie
+schema that represents a a book
 -title
 -author
 -published
@@ -8,18 +8,16 @@ schema that represents a movie
 */
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
-const movieSchema = new Schema({
+const bookSchema = new Schema({
+  name: String,
+  email: String,
   title: String,
   published: String,
   author: String,
   summary: String,
   reviews: [String],
-  comments: [{
-    user: String,
-    content: String,
-  }]
 }, {
   timestamps: true
 });
-const Movie = model('Movie', movieSchema);
-export default Movie;
+const Book = model('Book', bookSchema);
+export default Book;
