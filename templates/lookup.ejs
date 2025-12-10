@@ -2,14 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Search results for "<%- keyword %>"</title>
-    <link rel="stylesheet" href="/styles.css">
+    <title>Submit Review</title>
 </head>
 <body>
     <h1>Look up a Review!</h1><br><br>
-    <h2>Results for "<%- keyword %>"</h2>
-    <div class="display">
-        <%- reviews %>
-    </div>
+    <h2>Enter a book name or a user to find the associated reviews</h2>
+    <form action="/submit_review" method="POST">
+        <fieldset>
+            <div>
+                <div>
+                    <label for="search"><b>Username or Book Title:</b></label>
+                    <input type="query" id="search" name="search" required>
+                    <br><br>
+                </div>
+            </div>
+        </fieldset>
+        <div>
+            <br>
+            <input type="reset" value="Reset">
+            <input type="submit" value="Lookup Reviews">
+        </div>
+    </form>
+
+    <hr>
+
+    <a href="/">HOME</a>
 </body>
+<script>
+    window.onsubmit = () => { confirm("Are you sure you want to submit your review?\nYou will not be able to change your information once submitted.") }
+</script>
 </html>
