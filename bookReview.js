@@ -7,7 +7,7 @@ const { name } = require('ejs');
 require("dotenv").config();
 const mongoose = require('mongoose');
 const Book = require('./models/book');
-const Book = require('./models/review');
+const Review = require('./models/review');
 
 const portNumber = process.argv[2];
 const app = express();
@@ -25,8 +25,30 @@ mongoose.connect('mongodb://localhost:27017/CMSC335DB')
   .catch(err => console.log(err));
 
 
-app.post("/submit_review", (req, res) =>{
-    const search = req.body;
+app.post("/submit_review", async (req, res) =>{
+    const rawSearch = req.body.query;
+    const search = rawSearch.toLowercase().trim()
+    const [book, user] = await Promise.all([
+        Book.findOne({ "book.title": search}),
+        User.findOne({ "review.user": search})
+    ]);
 
-    if ()
+    let variables = {
+        keyword: "",
+        reviews: ""
+    };
+
+    if (book) {
+
+        variables.keyword = rawSearch;
+        book.reviews.forEach( r => {
+            variables.reviews += ``
+        })
+
+    } else if (user) {
+
+    } else {
+
+    }
+
 });
