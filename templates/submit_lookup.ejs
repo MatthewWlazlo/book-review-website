@@ -7,7 +7,7 @@
 <body>
     <h1>Look up a Review!</h1><br><br>
     <h2>Enter a book name or a user to find the associated reviews</h2>
-    <form action="/submit_review" method="post">
+    <form action="/submit_review" method="POST">
         <fieldset>
             <div>
                 <div>
@@ -20,7 +20,7 @@
         <div>
             <br>
             <input type="reset" value="Reset">
-            <input type="submit" value="Submit Application">
+            <input type="submit" value="Lookup Reviews">
         </div>
     </form>
 
@@ -29,6 +29,6 @@
     <a href="/">HOME</a>
 </body>
 <script>
-    window.onsubmit = () => { confirm("Are you sure you want to submit your application?\nYou will not be able to change your information once submitted.") }
+    window.onsubmit = () => { confirm("Are you sure you want to submit your review?\nYou will not be able to change your information once submitted.") }
 </script>
 </html>

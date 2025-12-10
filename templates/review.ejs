@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submit Review</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Submit a Book Review</h1>
+
+    <form action="/submit_review" method="POST" class="form-box">
+        <label>Username:</label>
+        <input type="text" name="name" required>
+
+        <label>Title:</label>
+        <input type="text" name="title" required>
+
+        <label>Author:</label>
+        <input type="text" name="author" required>
+
+        <label>Rating:</label>
+        <div class="star-rating">
+            <input type="radio" name="rating" id="star5" value="5" required>
+            <label for="star5">★</label>
+
+            <input type="radio" name="rating" id="star4" value="4">
+            <label for="star4">★</label>
+
+            <input type="radio" name="rating" id="star3" value="3">
+            <label for="star3">★</label>
+
+            <input type="radio" name="rating" id="star2" value="2">
+            <label for="star2">★</label>
+
+            <input type="radio" name="rating" id="star1" value="1">
+            <label for="star1">★</label>
+        </div>
+
+        <label>Review:</label>
+        <textarea name="review" rows="5" required></textarea>
+
+        <button type="submit">Submit Review</button>
+        <button type="reset">Reset</button>
+    </form>
+
+</body>
+</html>
