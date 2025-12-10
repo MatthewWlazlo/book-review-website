@@ -4,7 +4,7 @@ const fs = require('fs');
 const { get } = require('https');
 const path = require("path");
 const { name } = require('ejs');
-require("dotenv").config();
+require("dotenv").config({ path: "./credentialsDontPost/.env" });
 const mongoose = require('mongoose');
 const Book = require('./mongodb-mongoose/models/book');
 const Review = require('./mongodb-mongoose/models/review');
@@ -13,11 +13,6 @@ const portNumber = process.argv[2];
 const app = express();
 const uri = process.env.MONGO_CONNECTION_STRING;
 
-if (process.argv.length !== 3){
-    console.log('Usage bookReview.js portNumber')
-    return;
-}
-
 app.use(express.static(__dirname));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -25,18 +20,30 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.set("views", path.resolve(__dirname, "templates"));
 
-async function main(){
+app.get("/", (req, res) => {
+  res.send("<h1>Home route is working</h1>");
+});
 
-  mongoose.connect('mongodb://localhost:27017/CMSC335DB')
+app.get("/lookup", (req, res) => {
+  res.render("lookup");
+});
+
+app.get("/review", (req, res) => {
+  res.render("review");
+});
+
+function main(){
+
+  mongoose.connect(uri)
   .then(() => console.log("Connected to MongoDB"))
   .catch(err => console.log(err));
 
   app.post("/lookup", async (req, res) =>{
     const rawSearch = req.body.query;
-    const search = rawSearch.toLowercase().trim();
+    const search = rawSearch.toLowerCase().trim();
     const [book, user] = await Promise.all([
         Book.findOne({ "book.title": new RegExp(`^${search}$`, "i") }),
-        User.findOne({ "review.user": new RegExp(`^${search}$`, "i") })
+        Review.findOne({ "review.user": new RegExp(`^${search}$`, "i") })
     ]);
 
     let variables = {
@@ -90,24 +97,23 @@ async function main(){
   const server = app.listen(portNumber, () => {
         console.log(`Web server started and running at http://localhost:${portNumber}`);
         process.stdout.write('Stop to shutdown the server: ');
-    });
+  });
+  process.stdin.on('data', (input) => {
+  const cmd = input.toString('utf8').trim();
 
-    process.stdin.on('data', (input) => {
-        const cmd = input.toString('utf8').trim();
+  if(cmd === 'stop'){
+      server.close(() => {
+        console.log('Shutting down the server')
+        process.exit(0);
+      });
 
-        if(cmd === 'stop'){
-            server.close(() => {
-                console.log('Shutting down the server')
-                process.exit(0);
-            });
-
-            setTimeout(() => process.exit(0), 2000);
-            return;
-        } else {
-            console.log(`Invalid command: ${cmd}`);
-            process.stdout.write('Stop to shutdown the server: ');
-        }
-    }) 
+      setTimeout(() => process.exit(0), 2000);
+      return;
+  } else {
+      console.log(`Invalid command: ${cmd}`);
+      process.stdout.write('Stop to shutdown the server: ');
+    }
+  }) 
 }
 
 //looks up book information from API (information based on schema)
@@ -166,5 +172,7 @@ async function searchBook(query) {
     throw error;
   }
 }
+
+
 
 main();
