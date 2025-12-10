@@ -6,12 +6,17 @@ const path = require("path");
 const { name } = require('ejs');
 require("dotenv").config();
 const mongoose = require('mongoose');
-const Book = require('./models/book');
-const Review = require('./models/review');
+const Book = require('./mongodb-mongoose/models/book');
+const Review = require('./mongodb-mongoose/models/review');
 
 const portNumber = process.argv[2];
 const app = express();
 const uri = process.env.MONGO_CONNECTION_STRING;
+
+if (process.argv.length !== 3){
+    console.log('Usage bookReview.js portNumber')
+    return;
+}
 
 app.use(express.static(__dirname));
 app.use(express.json());
@@ -20,21 +25,23 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.set("views", path.resolve(__dirname, "templates"));
 
-mongoose.connect('mongodb://localhost:27017/CMSC335DB')
+async function main(){
+
+  mongoose.connect('mongodb://localhost:27017/CMSC335DB')
   .then(() => console.log("Connected to MongoDB"))
   .catch(err => console.log(err));
 
-
-app.post("/submit_review", async (req, res) =>{
+  app.post("/lookup", async (req, res) =>{
     const rawSearch = req.body.query;
-    const search = rawSearch.toLowercase().trim()
+    const search = rawSearch.toLowercase().trim();
     const [book, user] = await Promise.all([
-        Book.findOne({ "book.title": search}),
-        User.findOne({ "review.user": search})
+        Book.findOne({ "book.title": new RegExp(`^${search}$`, "i") }),
+        User.findOne({ "review.user": new RegExp(`^${search}$`, "i") })
     ]);
 
     let variables = {
         keyword: "",
+        book_info: "",
         reviews: ""
     };
 
@@ -42,24 +49,66 @@ app.post("/submit_review", async (req, res) =>{
 
         variables.keyword = rawSearch;
         book.reviews.forEach( r => {
-            variables.reviews += ``
-        })
+            variables.reviews += `
+            Name: ${r.name}<br>
+            Email: ${r.email}<br>
+            Rating: ${r.rating}<br>
+            Review: ${r.review}<br><br>
+          `;
+        });
+
+
+        res.render("submit_lookup", variables);
 
     } else if (user) {
 
+      variables.keyword = rawSearch;
+      user.forEach( r =>{
+        if (r.user === search){
+          variables.reviews += `
+            Name: ${r.name}<br>
+            Email: ${r.email}<br>
+            Rating: ${r.rating}<br>
+            Review: ${r.review}<br><br>
+          `;
+        }
+      })
+
+        res.render("submit_lookup", variables);
+
     } else {
+
+      variables.keyword = rawSearch;
+      variables.reviews = `<h2>No results found!</h2><br><br>`;
+
+      res.render("submit_lookup", variables);
 
     }
 
-});
+  });
 
-//returning search results from user (returns reviews from given user or book title)
-app.post("/submit_lookup", async (req, res) => {
+  const server = app.listen(portNumber, () => {
+        console.log(`Web server started and running at http://localhost:${portNumber}`);
+        process.stdout.write('Stop to shutdown the server: ');
+    });
 
-  //check both username and book title fields
+    process.stdin.on('data', (input) => {
+        const cmd = input.toString('utf8').trim();
 
-});
+        if(cmd === 'stop'){
+            server.close(() => {
+                console.log('Shutting down the server')
+                process.exit(0);
+            });
 
+            setTimeout(() => process.exit(0), 2000);
+            return;
+        } else {
+            console.log(`Invalid command: ${cmd}`);
+            process.stdout.write('Stop to shutdown the server: ');
+        }
+    }) 
+}
 
 //looks up book information from API (information based on schema)
 async function searchBook(query) {
@@ -117,3 +166,5 @@ async function searchBook(query) {
     throw error;
   }
 }
+
+main();

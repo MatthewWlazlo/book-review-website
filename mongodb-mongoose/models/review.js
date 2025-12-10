@@ -3,6 +3,7 @@ const { Schema, model } = mongoose;
 const reviewSchema = new Schema({
   review: {
     user: String,
+    email: String,
     rating: Number,
     reviews: String
   },

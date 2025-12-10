@@ -26,15 +26,9 @@ const bookSchema = new Schema({
     */
     reviews: [{
       name: String,
-<<<<<<< HEAD
       email: String,
       rating: Number,
       review: String
-=======
-      username: String,
-      review: String,
-      //rating: Number, add correct type
->>>>>>> c9e5cc3a20d25cdf0abea9cebc9bf9c3e597cbe9
     }],
   },
   }, {
