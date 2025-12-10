@@ -9,7 +9,9 @@ const mongoose = require('mongoose');
 const Book = require('./mongodb-mongoose/models/book');
 const Review = require('./mongodb-mongoose/models/review');
 
-const portNumber = process.argv[2];
+const portNumber = Number(process.argv[2] || 4000);
+console.log("argv:", process.argv);
+console.log("Using port:", portNumber);
 const app = express();
 const uri = process.env.MONGO_CONNECTION_STRING;
 
@@ -20,8 +22,13 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.set("views", path.resolve(__dirname, "templates"));
 
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 app.get("/", (req, res) => {
-  res.send("<h1>Home route is working</h1>");
+  res.render("index");
 });
 
 app.get("/lookup", (req, res) => {
@@ -32,13 +39,7 @@ app.get("/review", (req, res) => {
   res.render("review");
 });
 
-function main(){
-
-  mongoose.connect(uri)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch(err => console.log(err));
-
-  app.post("/lookup", async (req, res) =>{
+app.post("/lookup", async (req, res) =>{
     const rawSearch = req.body.query;
     const search = rawSearch.toLowerCase().trim();
     const [book, user] = await Promise.all([
@@ -94,11 +95,12 @@ function main(){
 
   });
 
-  const server = app.listen(portNumber, () => {
-        console.log(`Web server started and running at http://localhost:${portNumber}`);
-        process.stdout.write('Stop to shutdown the server: ');
-  });
-  process.stdin.on('data', (input) => {
+const server = app.listen(portNumber, () => {
+    console.log(`Web server started and running at http://localhost:${portNumber}`);
+    process.stdout.write('Stop to shutdown the server: ');
+});
+
+process.stdin.on('data', (input) => {
   const cmd = input.toString('utf8').trim();
 
   if(cmd === 'stop'){
@@ -114,7 +116,10 @@ function main(){
       process.stdout.write('Stop to shutdown the server: ');
     }
   }) 
-}
+
+mongoose.connect(uri)
+  .then(() => console.log("\nConnected to MongoDB"))
+  .catch(err => console.log(err));
 
 //looks up book information from API (information based on schema)
 async function searchBook(query) {
@@ -173,6 +178,3 @@ async function searchBook(query) {
   }
 }
 
-
-
-main();
