@@ -14,10 +14,21 @@ const bookSchema = new Schema({
     published: String,
     author: String,
     summary: String,
+    //match type in bookReview.js? 
+    /*
+        name: name,
+        email: email,
+        title: title,
+        author: author,
+        published: published,
+        summary: summary,
+        review: review
+    */
     reviews: [{
       name: String,
-      email: String,
-      review: String
+      username: String,
+      review: String,
+      //rating: Number, add correct type
     }],
   },
   }, {
