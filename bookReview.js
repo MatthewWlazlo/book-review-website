@@ -28,19 +28,23 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.render("home");
+  res.render("home.ejs");
+});
+
+app.get("/home", (req, res) => {
+  res.render("home.ejs");
 });
 
 app.get("/lookup", (req, res) => {
-  res.render("lookup");
+  res.render("lookup.ejs");
 });
 
 app.get("/review", (req, res) => {
-  res.render("review");
+  res.render("review.ejs");
 });
 
-app.get("about", (req, res) => {
-  res.render("about");
+app.get("/about", (req, res) => {
+  res.render("about.ejs");
 });
 
 app.post("/lookup", async (req, res) =>{
