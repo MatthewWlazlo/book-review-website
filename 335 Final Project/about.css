@@ -1,0 +1,51 @@
+
+.main-container{
+    overflow-x: hidden;
+}
+.desc-container{
+    background-color: #F9F9F9; 
+    margin-top:5px; 
+    height:900px; 
+    width:100%; 
+    padding:25px; 
+    position:top; 
+}
+
+.flex-container{
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    height: 900px;
+}
+
+.desc-text-container{
+    background-color: #A8D0E6; 
+    height:425px; 
+    width:100%; 
+    display:flex; 
+    justify-content: center;
+
+}   
+
+.desc-text{
+    width:85%; 
+    text-align: center; 
+    color:#1A1A1A; 
+    font-size:28px; 
+    margin-top:20px; 
+}
+
+.about-text{
+    margin-right:250px; 
+}
+
+.umd-photo{
+    margin-top:100px; 
+}
+
+h1{
+    color: black; 
+    font-family: Bahnschrift, 'DIN Alternate', 'Franklin Gothic Medium', 'Nimbus Sans Narrow', sans-serif-condensed, sans-serif;
+    font-weight: normal; 
+    font-size:52px;
+}

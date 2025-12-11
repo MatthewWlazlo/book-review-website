@@ -1,0 +1,47 @@
+
+ .photo-container{
+  display:flex; 
+  justify-content: space-between;
+  margin-top: 150px; 
+  margin-left: 150px; 
+  margin-right: 150px; 
+ }
+
+ .light-background{
+  /* background-color:#171716;  */
+  background-color: whitesmoke; 
+  padding: 100px 75px;
+ }
+
+ .last-section {
+  padding-bottom: 250px;
+}
+ /*Photo Hover */ 
+ .photo-1, .photo{
+  position: relative; 
+  text-align:center;
+}
+
+.text-overlay{
+  position: absolute;
+  top: 50%;
+  left: 33%;
+  display:none; 
+  pointer-events:none; 
+}
+
+.text-overlay-2{
+  left:15%; 
+}
+
+.photo:hover .text-overlay{
+  display:block;
+  font-size:54px; 
+}
+
+.photo img:hover {
+  opacity:.5;    
+}
+/*Photo Hover End 
+
+
