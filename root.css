@@ -1,0 +1,65 @@
+
+body{
+    background-image: url('Images/photo-1719310469053-8c5c0c6803d3.jpeg'); 
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh; 
+    margin: 0;
+   }
+   
+  /*Start of nav bar */ 
+  .topnav {
+      /* background-color:bisque;
+      overflow: hidden; */
+      padding-bottom:18px; 
+      border-bottom: solid 1px whitesmoke; 
+    }
+  
+    .topnav a{
+      /* color:#333;  */
+      color: #D8BCAB;
+      text-decoration: none; 
+    }
+  
+    .topnav a:hover{
+      text-decoration: underline; 
+    }
+  
+    .topnav a.active{
+      text-decoration: underline; 
+    }
+  
+  .name{
+      /*Maybe change color */ 
+      color:#D8BCAB; 
+      font-size: 40px; 
+      margin-top:18px; 
+  }
+  
+  .item-container{
+      display:flex;
+  }
+  
+  .item-container-1{
+      display:flex;
+      width:125%;
+  }
+  
+  .item-container-2{
+      margin-left: 950px; 
+      margin-top: 31px; 
+      display:flex;  
+  }
+  
+  .item{
+      font-family: 'Courier New', Courier, monospace; 
+      font-size: 28px;  
+  }
+  
+  .item2{
+      margin-left: 25px; 
+      margin-right: 25px; 
+  }
+  
+   /*End of nav bar */ 
+  
