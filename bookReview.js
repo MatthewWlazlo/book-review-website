@@ -6,8 +6,8 @@ const path = require("path");
 const { name } = require('ejs');
 require("dotenv").config({ path: "./credentialsDontPost/.env" });
 const mongoose = require('mongoose');
-const Book = require('./mongodb-mongoose/models/book');
-const Review = require('./mongodb-mongoose/models/review');
+const Book = require('./mongodb-mongoose/models/book.cjs');
+const Review = require('./mongodb-mongoose/models/review.cjs');
 
 const portNumber = Number(process.argv[2] || 4000);
 console.log("argv:", process.argv);
@@ -65,11 +65,8 @@ app.post("/lookup", async (req, res) =>{
           `;
         });
 
-
         res.render("submit_lookup", variables);
-
     } else if (user) {
-
       variables.keyword = rawSearch;
       user.forEach( r =>{
         if (r.user === search){
@@ -83,17 +80,25 @@ app.post("/lookup", async (req, res) =>{
       })
 
         res.render("submit_lookup", variables);
-
     } else {
-
       variables.keyword = rawSearch;
       variables.reviews = `<h2>No results found!</h2><br><br>`;
 
       res.render("submit_lookup", variables);
-
     }
-
   });
+
+app.post("/review", (req, res) =>{
+  const { name, email, title, author, rating, review } = req.body;
+  const book = searchBook(title);
+  const book_data = {
+    title: title,
+    published: published,
+    author: author,
+    summary: summary,
+    reviews: []
+  };
+})
 
 const server = app.listen(portNumber, () => {
     console.log(`Web server started and running at http://localhost:${portNumber}`);
@@ -176,5 +181,22 @@ async function searchBook(query) {
     console.error('Error searching for book:', error);
     throw error;
   }
+}
+
+async function addReviewById(bookId, newReview) {
+  const bookDoc = await Book.findById(bookId);
+  if (!bookDoc) {
+    throw new Error("Book not found");
+  }
+
+  bookDoc.book.reviews.push({
+    name: newReview.name,
+    email: newReview.email,
+    rating: newReview.rating,
+    review: newReview.review
+  });
+
+  await bookDoc.save();
+  return bookDoc;
 }
 
