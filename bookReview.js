@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("home");
 });
 
 app.get("/lookup", (req, res) => {
@@ -37,6 +37,10 @@ app.get("/lookup", (req, res) => {
 
 app.get("/review", (req, res) => {
   res.render("review");
+});
+
+app.get("about", (req, res) => {
+  res.render("about");
 });
 
 app.post("/lookup", async (req, res) =>{
