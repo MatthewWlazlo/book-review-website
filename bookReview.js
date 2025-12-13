@@ -15,6 +15,9 @@ console.log("Using port:", portNumber);
 const app = express();
 const uri = process.env.MONGO_CONNECTION_STRING;
 
+//conecting to database
+const databaseName = "CMSC335DB";
+
 app.use(express.static(__dirname));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +29,8 @@ app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
+
+//rendering pages
 
 app.get("/", (req, res) => {
   res.render("home.ejs");
@@ -46,6 +51,8 @@ app.get("/review", (req, res) => {
 app.get("/about", (req, res) => {
   res.render("about.ejs");
 });
+
+//lookup reviews for a book based on username or book title
 
 app.post("/lookup", async (req, res) =>{
     const rawSearch = req.body.query;
@@ -98,13 +105,13 @@ app.post("/lookup", async (req, res) =>{
 
 app.post("/review", (req, res) =>{
   const { name, email, title, author, rating, review } = req.body;
+  //gather data from API
   const book = searchBook(title);
   const book_data = {
     title: title,
     published: published,
     author: author,
     summary: summary,
-    reviews: []
   };
 })
 
@@ -175,7 +182,7 @@ async function searchBook(query) {
         }
         
         return {
-          title: book.title || 'Unknown Title',
+          title: book.title || 'Title',
           published: book.first_publish_year ? book.first_publish_year.toString() : 'Unknown',
           author: book.author_name ? book.author_name.join(', ') : 'Unknown Author',
           summary: summary
