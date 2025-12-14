@@ -89,11 +89,11 @@ app.get("/about", (req, res) => {
 app.post("/lookup", async (req, res) => {
   const search = req.body.query;
   const pattern = new RegExp(`^${search}$`, "i");
-  const [book, user] = await Promise.all([
+  const [book, username] = await Promise.all([
     Book.findOne({ "title": { $regex: pattern }}),
-    Review.findOne({ "review.user": { $regex: pattern }}),
+    Review.find({ "name": { $regex: pattern }}),
   ]);
-  console.log("\nBook: " + book + "\nUser: " + user);
+  console.log("\nBook: " + book + "\nUser: " + username);
 
   let variables = {
     keyword: "",
@@ -109,7 +109,7 @@ app.post("/lookup", async (req, res) => {
     reviews.forEach((r) => {
       console.log("\nReached!");
       variables.reviews += `
-            Name: ${r.user}<br>
+            Name: ${r.name}<br>
             Email: ${r.email}<br>
             Rating: ${r.rating}<br>
             Review: ${r.review}<br><br>
@@ -128,17 +128,17 @@ app.post("/lookup", async (req, res) => {
 
     console.log(variables);
     res.render("submit_lookup", variables);
-  } else if (user) {
+  } else if (username) {
     variables.keyword = search;
-    user.forEach((r) => {
-      if (r.user === search) {
-        variables.reviews += `
-            Name: ${r.name}<br>
-            Email: ${r.email}<br>
-            Rating: ${r.rating}<br>
-            Review: ${r.review}<br><br>
-          `;
-      }
+    username.forEach((r) => {
+      variables.reviews += `
+          Name: ${r.name}<br>
+          Email: ${r.email}<br>
+          Title: ${r.title}<br>
+          Author: ${r.author}<br>
+          Rating: ${r.rating}<br>
+          Review: ${r.review}<br><br>
+        `;
     });
 
     res.render("submit_lookup", variables);
@@ -154,12 +154,12 @@ app.post("/lookup", async (req, res) => {
 
 app.post("/submit_review", async (req, res) => {
 
-  const { user, email, title, author, rating, review } = req.body;
+  const { name, email, title, author, rating, review } = req.body;
   //gather data from API
   // need publishing date and summary
   const book = searchBook(title);
   console.log("Searching for book...\n");
-
+  console.log(`Name:  ${name}\n`);
   try {
     const results = await searchBook(title);
     const picked = results?.[0] || {}
@@ -171,7 +171,7 @@ app.post("/submit_review", async (req, res) => {
       summary: picked.summary,
       reviews: [
         {
-          user: user,
+          name: name,
           email: email,
           rating: rating,
           review: review,
@@ -179,7 +179,17 @@ app.post("/submit_review", async (req, res) => {
       ],
     });
     console.log("Created book schema");
+    const review_data = new Review({
+      name: name,
+      email: email,
+      title: title,
+      author: author,
+      rating: rating,
+      review: review,
+    });
+    console.log("\nCreated review schema");
     await book_data.save();
+    await review_data.save();
     console.log("\nSaved!");
   } catch (e) {
     console.error("Submit review failed:", e);

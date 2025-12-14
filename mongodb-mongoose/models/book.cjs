@@ -13,7 +13,7 @@ const bookSchema = new Schema({
   reviews: {
     type: [
       {
-        user: String,
+        name: String,
         email: String,
         rating: Number,
         review: String
