@@ -53,10 +53,13 @@ process.stdin.on("data", (input) => {
     process.stdout.write("Stop to shutdown the server: ");
   }
 });
-
+console.log("\n" + uri + "\n");
 mongoose
   .connect(uri)
-  .then(() => console.log("\nConnected to MongoDB"))
+  .then(() => {
+    console.log("\nConnected to MongoDB")
+    console.log("DB:", mongoose.connection.name);
+  })
   .catch((err) => console.log(err));
 
 //rendering pages
@@ -84,11 +87,11 @@ app.get("/about", (req, res) => {
 //lookup reviews for a book based on username or book title
 
 app.post("/lookup", async (req, res) => {
-  const rawSearch = req.body.query;
-  const search = rawSearch.toLowerCase().trim();
+  const search = req.body.query;
+  const pattern = new RegExp(`^${search}$`, "i");
   const [book, user] = await Promise.all([
-    Book.findOne({ "book.title": search}),
-    Review.findOne({ "review.user": search}),
+    Book.findOne({ "title": { $regex: pattern }}),
+    Review.findOne({ "review.user": { $regex: pattern }}),
   ]);
   console.log("\nBook: " + book + "\nUser: " + user);
 
@@ -98,22 +101,35 @@ app.post("/lookup", async (req, res) => {
     reviews: "",
   };
 
-  console.log("\nSearch: " + rawSearch + "\n");
+  console.log("\nSearch: " + search + "\n");
 
   if (book) {
-    variables.keyword = rawSearch;
-    book.reviews.forEach((r) => {
+    variables.keyword = search;
+    const reviews = Array.isArray(book.reviews) ? book.reviews : [];
+    reviews.forEach((r) => {
+      console.log("\nReached!");
       variables.reviews += `
-            Name: ${r.name}<br>
+            Name: ${r.user}<br>
             Email: ${r.email}<br>
             Rating: ${r.rating}<br>
             Review: ${r.review}<br><br>
           `;
     });
 
+    const results = await searchBook(search);
+    const bookQuery = results[0];
+    const title = bookQuery.title;
+    const published = bookQuery.published;
+    const author = bookQuery.author;
+    const summary = bookQuery.summary;
+
+    variables.book_info = `<h2>${title}</h2><br><h3>${author}</h3><br>${published}<br><br><strong>${summary}</strong>`;
+
+
+    console.log(variables);
     res.render("submit_lookup", variables);
   } else if (user) {
-    variables.keyword = rawSearch;
+    variables.keyword = search;
     user.forEach((r) => {
       if (r.user === search) {
         variables.reviews += `
@@ -127,7 +143,7 @@ app.post("/lookup", async (req, res) => {
 
     res.render("submit_lookup", variables);
   } else {
-    variables.keyword = rawSearch;
+    variables.keyword = search;
     variables.reviews = `<h2>No results found!</h2><br><br>`;
 
     res.render("submit_lookup", variables);
@@ -145,15 +161,17 @@ app.post("/submit_review", async (req, res) => {
   console.log("Searching for book...\n");
 
   try {
+    const results = await searchBook(title);
+    const picked = results?.[0] || {}
     
     const book_data = new Book({
       title: title,
-      published: book.published,
+      published: picked.published,
       author: author,
-      summary: book.summary,
+      summary: picked.summary,
       reviews: [
         {
-          user: user.toLowerCase(),
+          user: user,
           email: email,
           rating: rating,
           review: review,
@@ -164,7 +182,8 @@ app.post("/submit_review", async (req, res) => {
     await book_data.save();
     console.log("\nSaved!");
   } catch (e) {
-    console.error(e);
+    console.error("Submit review failed:", e);
+    res.status(500).send("Error saving review");
   } finally {
     res.render("submit_review", { book: title});
   }
