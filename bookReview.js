@@ -87,15 +87,18 @@ app.post("/lookup", async (req, res) => {
   const rawSearch = req.body.query;
   const search = rawSearch.toLowerCase().trim();
   const [book, user] = await Promise.all([
-    Book.findOne({ "book.title": new RegExp(`^${search}$`, "i") }),
-    Review.findOne({ "review.user": new RegExp(`^${search}$`, "i") }),
+    Book.findOne({ "book.title": search}),
+    Review.findOne({ "review.user": search}),
   ]);
+  console.log("\nBook: " + book + "\nUser: " + user);
 
   let variables = {
     keyword: "",
     book_info: "",
     reviews: "",
   };
+
+  console.log("\nSearch: " + rawSearch + "\n");
 
   if (book) {
     variables.keyword = rawSearch;
@@ -133,45 +136,37 @@ app.post("/lookup", async (req, res) => {
 
 //submits review to database
 
-app.post("/review", async (req, res) => {
-  //set up database connection
-  const databaseName = "CMSC335DB";
-  const collectionName = "bookReviews";
-  const uri = process.env.MONGO_CONNECTION_STRING;
-  const client = new MongoClient(uri, { serverApi: ServerApiVersion.v1 });
+app.post("/submit_review", async (req, res) => {
 
   const { user, email, title, author, rating, review } = req.body;
   //gather data from API
-  //const book = searchBook(title);
-  const book_data = {
-    title: title,
-    published: published,
-    author: author,
-    summary: summary,
-    reviews: [
-      {
-        user: user,
-        email: email,
-        rating: rating,
-        review: review,
-      },
-    ],
-  };
-  try {
-    //connect to MongoDB
-    await client.connect();
-    const database = client.db(databaseName);
-    const collection = database.collection(collectionName);
+  // need publishing date and summary
+  const book = searchBook(title);
+  console.log("Searching for book...\n");
 
-    //insert information
-    await collection.insertOne(book_data);
-    response.render("submit_review", {
-      book_data: book_data,
+  try {
+    
+    const book_data = new Book({
+      title: title,
+      published: book.published,
+      author: author,
+      summary: book.summary,
+      reviews: [
+        {
+          user: user.toLowerCase(),
+          email: email,
+          rating: rating,
+          review: review,
+        },
+      ],
     });
+    console.log("Created book schema");
+    await book_data.save();
+    console.log("\nSaved!");
   } catch (e) {
     console.error(e);
   } finally {
-    await client.close();
+    res.render("submit_review", { book: title});
   }
 });
 
