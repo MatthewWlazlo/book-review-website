@@ -1,13 +1,13 @@
-const http = require('http')
-const express = require ('express');
-const fs = require('fs');
-const { get } = require('https');
+const http = require("http");
+const express = require("express");
+const fs = require("fs");
+const { get } = require("https");
 const path = require("path");
-const { name } = require('ejs');
+const { name } = require("ejs");
 require("dotenv").config({ path: "./credentialsDontPost/.env" });
-const mongoose = require('mongoose');
-const Book = require('./mongodb-mongoose/models/book.cjs');
-const Review = require('./mongodb-mongoose/models/review.cjs');
+const mongoose = require("mongoose");
+const Book = require("./mongodb-mongoose/models/book.cjs");
+const Review = require("./mongodb-mongoose/models/review.cjs");
 
 const portNumber = Number(process.argv[2] || 4000);
 console.log("argv:", process.argv);
@@ -22,13 +22,42 @@ app.use(express.static(__dirname));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "templates"));
 
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
+
+const server = app.listen(portNumber, () => {
+  console.log(
+    `Web server started and running at http://localhost:${portNumber}`
+  );
+  process.stdout.write("Stop to shutdown the server: ");
+});
+
+process.stdin.on("data", (input) => {
+  const cmd = input.toString("utf8").trim();
+
+  if (cmd === "stop") {
+    server.close(() => {
+      console.log("Shutting down the server");
+      process.exit(0);
+    });
+
+    setTimeout(() => process.exit(0), 2000);
+    return;
+  } else {
+    console.log(`Invalid command: ${cmd}`);
+    process.stdout.write("Stop to shutdown the server: ");
+  }
+});
+
+mongoose
+  .connect(uri)
+  .then(() => console.log("\nConnected to MongoDB"))
+  .catch((err) => console.log(err));
 
 //rendering pages
 
@@ -54,164 +83,159 @@ app.get("/about", (req, res) => {
 
 //lookup reviews for a book based on username or book title
 
-app.post("/lookup", async (req, res) =>{
-    const rawSearch = req.body.query;
-    const search = rawSearch.toLowerCase().trim();
-    const [book, user] = await Promise.all([
-        Book.findOne({ "book.title": new RegExp(`^${search}$`, "i") }),
-        Review.findOne({ "review.user": new RegExp(`^${search}$`, "i") })
-    ]);
+app.post("/lookup", async (req, res) => {
+  const rawSearch = req.body.query;
+  const search = rawSearch.toLowerCase().trim();
+  const [book, user] = await Promise.all([
+    Book.findOne({ "book.title": new RegExp(`^${search}$`, "i") }),
+    Review.findOne({ "review.user": new RegExp(`^${search}$`, "i") }),
+  ]);
 
-    let variables = {
-        keyword: "",
-        book_info: "",
-        reviews: ""
-    };
+  let variables = {
+    keyword: "",
+    book_info: "",
+    reviews: "",
+  };
 
-    if (book) {
-
-        variables.keyword = rawSearch;
-        book.reviews.forEach( r => {
-            variables.reviews += `
+  if (book) {
+    variables.keyword = rawSearch;
+    book.reviews.forEach((r) => {
+      variables.reviews += `
             Name: ${r.name}<br>
             Email: ${r.email}<br>
             Rating: ${r.rating}<br>
             Review: ${r.review}<br><br>
           `;
-        });
+    });
 
-        res.render("submit_lookup", variables);
-    } else if (user) {
-      variables.keyword = rawSearch;
-      user.forEach( r =>{
-        if (r.user === search){
-          variables.reviews += `
+    res.render("submit_lookup", variables);
+  } else if (user) {
+    variables.keyword = rawSearch;
+    user.forEach((r) => {
+      if (r.user === search) {
+        variables.reviews += `
             Name: ${r.name}<br>
             Email: ${r.email}<br>
             Rating: ${r.rating}<br>
             Review: ${r.review}<br><br>
           `;
-        }
-      })
+      }
+    });
 
-        res.render("submit_lookup", variables);
-    } else {
-      variables.keyword = rawSearch;
-      variables.reviews = `<h2>No results found!</h2><br><br>`;
+    res.render("submit_lookup", variables);
+  } else {
+    variables.keyword = rawSearch;
+    variables.reviews = `<h2>No results found!</h2><br><br>`;
 
-      res.render("submit_lookup", variables);
-    }
-  });
+    res.render("submit_lookup", variables);
+  }
+});
 
-app.post("/review", (req, res) =>{
-  const { name, email, title, author, rating, review } = req.body;
+//submits review to database
+
+app.post("/review", async (req, res) => {
+  //set up database connection
+  const databaseName = "CMSC335DB";
+  const collectionName = "bookReviews";
+  const uri = process.env.MONGO_CONNECTION_STRING;
+  const client = new MongoClient(uri, { serverApi: ServerApiVersion.v1 });
+
+  const { user, email, title, author, rating, review } = req.body;
   //gather data from API
-  const book = searchBook(title);
+  //const book = searchBook(title);
   const book_data = {
     title: title,
     published: published,
     author: author,
     summary: summary,
+    reviews: [
+      {
+        user: user,
+        email: email,
+        rating: rating,
+        review: review,
+      },
+    ],
   };
-})
+  try {
+    //connect to MongoDB
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
 
-const server = app.listen(portNumber, () => {
-    console.log(`Web server started and running at http://localhost:${portNumber}`);
-    process.stdout.write('Stop to shutdown the server: ');
+    //insert information
+    await collection.insertOne(book_data);
+    response.render("submit_review", {
+      book_data: book_data,
+    });
+  } catch (e) {
+    console.error(e);
+  } finally {
+    await client.close();
+  }
 });
-
-process.stdin.on('data', (input) => {
-  const cmd = input.toString('utf8').trim();
-
-  if(cmd === 'stop'){
-      server.close(() => {
-        console.log('Shutting down the server')
-        process.exit(0);
-      });
-
-      setTimeout(() => process.exit(0), 2000);
-      return;
-  } else {
-      console.log(`Invalid command: ${cmd}`);
-      process.stdout.write('Stop to shutdown the server: ');
-    }
-  }) 
-
-mongoose.connect(uri)
-  .then(() => console.log("\nConnected to MongoDB"))
-  .catch(err => console.log(err));
 
 //looks up book information from API (information based on schema)
 async function searchBook(query) {
   try {
     const encodedQuery = encodeURIComponent(query);
-    
+
     //API query call based on URL
-    const response = await fetch(`https://openlibrary.org/search.json?q=${encodedQuery}&limit=10`);
-    
+    const response = await fetch(
+      `https://openlibrary.org/search.json?q=${encodedQuery}&limit=10`
+    );
+
     if (!response.ok) {
       throw new Error(`API request failed: ${response.status}`);
     }
-    
+
     const data = await response.json();
-    
+
     if (!data.docs || data.docs.length === 0) {
       return [];
     }
-    
+
     //map results
     const books = await Promise.all(
       data.docs.slice(0, 10).map(async (book) => {
-        let summary = 'No summary available';
-        
+        let summary = "No summary available";
+
         // fetch description from Works API if work key exists
         if (book.key) {
           try {
-            const workResponse = await fetch(`https://openlibrary.org${book.key}.json`);
+            const workResponse = await fetch(
+              `https://openlibrary.org${book.key}.json`
+            );
             if (workResponse.ok) {
               const workData = await workResponse.json();
               if (workData.description) {
-                summary = typeof workData.description === 'string' 
-                  ? workData.description 
-                  : workData.description.value || 'No summary available';
+                summary =
+                  typeof workData.description === "string"
+                    ? workData.description
+                    : workData.description.value || "No summary available";
               }
             }
           } catch (error) {
             console.log(`Could not fetch description for ${book.title}`);
           }
         }
-        
+
         return {
-          title: book.title || 'Title',
-          published: book.first_publish_year ? book.first_publish_year.toString() : 'Unknown',
-          author: book.author_name ? book.author_name.join(', ') : 'Unknown Author',
-          summary: summary
+          title: book.title || "Title",
+          published: book.first_publish_year
+            ? book.first_publish_year.toString()
+            : "Unknown",
+          author: book.author_name
+            ? book.author_name.join(", ")
+            : "Unknown Author",
+          summary: summary,
         };
       })
     );
-    
+
     return books;
-    
   } catch (error) {
-    console.error('Error searching for book:', error);
+    console.error("Error searching for book:", error);
     throw error;
   }
 }
-
-async function addReviewById(bookId, newReview) {
-  const bookDoc = await Book.findById(bookId);
-  if (!bookDoc) {
-    throw new Error("Book not found");
-  }
-
-  bookDoc.book.reviews.push({
-    name: newReview.name,
-    email: newReview.email,
-    rating: newReview.rating,
-    review: newReview.review
-  });
-
-  await bookDoc.save();
-  return bookDoc;
-}
-
