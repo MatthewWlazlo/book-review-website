@@ -42,6 +42,6 @@ Use form to submit review, store reviews in MongoDB, look up review from name or
             Group Members: Alexis Tungcod, Europa Roso, Matthew Wlazlo, Nicholas Nash
             App Description: Allows users to submit reviews for a book, look up reviews by title, or look up reviews by user who's submitted reviews.
             YouTube Video Link: https://www.youtube.com/MyAmazingAPP
-            APIs: https://openlibrary.org/developers/api
+            APIs: OpenLibrary (https://openlibrary.org/developers/api)
             Contact Email:  mwlazlo@terpmail.umd.edu
             Deployed App Link: https://notreal.what.terpNel/myApp
