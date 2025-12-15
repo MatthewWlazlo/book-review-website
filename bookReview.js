@@ -34,13 +34,6 @@ app.use((req, res, next) => {
 //rendering pages with router
 app.use("/", pagesRouter);
 
-const server = app.listen(portNumber, () => {
-  console.log(
-    `Web server started and running at http://localhost:${portNumber}`
-  );
-  process.stdout.write("Stop to shutdown the server: ");
-});
-
 process.stdin.on("data", (input) => {
   const cmd = input.toString("utf8").trim();
 
@@ -63,6 +56,12 @@ mongoose
   .then(() => {
     console.log("\nConnected to MongoDB")
     console.log("DB:", mongoose.connection.name);
+    const server = app.listen(portNumber, () => {
+      console.log(
+        `Web server started and running at http://localhost:${portNumber}`
+      );
+      process.stdout.write("Stop to shutdown the server: ");
+    });
   })
   .catch((err) => console.log(err));
 
