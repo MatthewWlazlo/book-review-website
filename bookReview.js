@@ -114,7 +114,7 @@ app.post("/lookup", async (req, res) => {
 
     console.log(variables);
     res.render("submit_lookup", variables);
-  } else if (username && username?.name !== undefined) {
+  } else if (username && username.length > 0) {
     console.log("\nReached username!");
     variables.keyword = search;
     username.forEach((r) => {
