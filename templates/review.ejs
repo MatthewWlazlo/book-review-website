@@ -2,56 +2,100 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Playfair+Display">
+    <link rel = "stylesheet" href = "root.css">
+    <link rel = "stylesheet" href = "review.css">
     <title>Submit Review</title>
-    <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <h1>Submit a Book Review</h1>
-
-    <form action="/submit_review" method="POST" class="form-box">
-        <label>Username:</label>
-        <input type="text" name="name" required>
-
-        <label>Email:</label>
-        <input type="email" name="email" required>
-
-        <label>Title:</label>
-        <input type="text" name="title" required>
-
-      <label>Author:</label>
-      <input type="text" name="author" required />
-      <br>
-      <br>
-
-        <label>Rating:</label>
-        <div class="star-rating">
-            <input type="radio" name="rating" id="star5" value="5" required>
-            <label for="star5">5★</label>
-
-            <input type="radio" name="rating" id="star4" value="4">
-            <label for="star4">4★</label>
-
-            <input type="radio" name="rating" id="star3" value="3">
-            <label for="star3">3★</label>
-
-            <input type="radio" name="rating" id="star2" value="2">
-            <label for="star2">2★</label>
-
-        <input type="radio" name="rating" id="star1" value="1" />
-        <label for="star1">★</label>
+    <div class="topnav">
+      
+      <div class="item-container">
+  
+          <div class ="item-container-1">
+              <div class = "name">&nbsp;Book Review Site </div>
+          </div>
+          
+          <div class ="item-container-2">
+              <div class = "item item1"><a href ="/home">Home </a></div>
+              <div class = "item item2"><a href = "/about">About</a></div>
+          </div>  
+       
       </div>
-      <br>
+  </div>
 
-      <label>Review:</label>
-      <textarea name="review" rows="5" required></textarea>
+  <div class = "main-container"> 
+      <div class = "form-container"> 
+          <center><h1>Submit a Book Review</h1></center>
+          <form action="/submit_review" method="POST" class="form-box">
+              <div class = "flex-container"> 
 
-      <br>
-      <br>
-      <button type="submit">Submit Review</button>
-      <button type="reset">Reset</button>
-    </form>
-    <hr />
-    <a href="/">HOME</a>
+                  <div class ="item-1">
+                      <label>Username:</label>
+                      <input class="search-bar" type="text" name="name" required>
+                      <br> 
+                      <label>Email:</label>
+                      <input class="search-bar"  type="email" name="email" required>
+                  </div>
+                 
+                  <div class = "item-2"> 
+                      <label>Title:</label>
+                      <input class="search-bar" type="text" name="title" required>
+                      <br>
+                      <label class = "author">Author:</label>
+                      <input class="search-bar" type="text" name="author" required />
+                  </div>
+              </div>
+
+            
+     
+              <div class = "flex-container-2">
+                  <label>Rating:</label>
+                  <div class="star-rating">
+                      
+                      <input type="radio" name="rating" id="star5" value="5" required>
+                      <label for="star5">5★</label>
+
+                      <input type="radio" name="rating" id="star4" value="4">
+                      <label for="star4">4★</label>
+                      
+                      <input type="radio" name="rating" id="star3" value="3">
+                      <label for="star3">3★</label>
+                      
+                      <input type="radio" name="rating" id="star2" value="2">
+                      <label for="star2">2★</label>
+                     
+                      <input type="radio" name="rating" id="star1" value="1" />
+                      <label for="star1">1★</label>
+                     
+                  </div>
+                        
+
+                  <div class ="review-container"> 
+                      <label>Review:</label>
+                      <textarea name="review" rows="5" required></textarea>
+                  </div>
+                  
+                      <br>
+                      <br>
+                  
+                  <div class = "btn-container"> 
+                  <button class ="submit-btn" type="submit">Submit Review</button>
+                  <button class="reset-btn" type="reset">Reset</button>
+                  </div>
+                  
+
+               </div>
+               
+
+                </form>
+                
+              
+             
+      </div>
+  </div>
     <script>
       window.onsubmit = () => {
         confirm(

@@ -1,0 +1,27 @@
+.main-container{
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container{
+    background-color: white;
+    width: 40%;
+    height:75%; 
+}
+
+.text-container{
+    width:60%;
+}
+
+h1{
+    font-size: 2.8rem; 
+    font-family: 'PlayFair Display', serif; 
+}
+
+p{
+    font-size:1.5rem; 
+}
+

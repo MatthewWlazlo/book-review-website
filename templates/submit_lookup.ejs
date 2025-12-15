@@ -2,19 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Playfair+Display">
+    <link rel = "stylesheet" href = "root.css">
+    <link rel = "stylesheet" href = "submit_lookup.css">
     <title>Search results for "<%- keyword %>"</title>
-    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <h1>Look up a Review!</h1><br><br>
-    <h2>Results for "<%- keyword %>"</h2>
-    <div class="book">
-        <%- book_info %>
+
+    <div class="topnav">
+      
+        <div class="item-container">
+    
+        <div class ="item-container-1">
+
+           <div class = "name">&nbsp;Book Review Site </div>
+        </div> 
+    
+        <div class ="item-container-2">
+            <div class = "item item1"><a href ="/home">Home </a></div>
+            <div class = "item item2"><a href = "/about">About</a></div>
+        </div>   
+        </div>
+    
     </div>
-    <div class="display">
-        <%- reviews %>
+
+    <div class = "main-container">
+        <div class = "form-container"> 
+            <center>
+                <div class = text-container>
+                    <h1>Lookup a Review!</h1>
+                    <h2>Results for "<%- keyword %>"</h2>
+                    <div class="book">
+                        <%- book_info %>
+                    </div>
+                    <div class="display">
+                        <%- reviews %>
+                    </div>
+                </div>
+            </center>
+
+
+        </div>
     </div>
-    <hr />
-    <a href="/">HOME</a>
-</body>
 </html>

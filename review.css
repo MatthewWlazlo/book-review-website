@@ -1,0 +1,134 @@
+
+.main-container{
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container{
+    background-color: white;
+    width: 40%;
+    height:68%; 
+}
+
+.flex-container{
+    display: flex; 
+    flex-direction: row; 
+    justify-content: space-between; 
+    margin-left:30px; 
+    gap:40px; 
+}
+
+.item-1, .item-2{
+    font-size:1.3rem; 
+    margin-top: 25px; 
+    flex:1; 
+    min-width:220px; 
+    display:flex; 
+    flex-direction:column; 
+}
+
+
+.search-bar{
+    width:200px; 
+    height:15px; 
+    font-size:1.0rem; 
+    border-radius: 8px; 
+    padding: 8px 12px; 
+    border:1px solid gray; 
+}
+
+h1{
+    font-size: 2.8rem; 
+    font-family: 'PlayFair Display', serif; 
+}
+
+
+.flex-container-2 {
+    margin-top:15px;
+    display: flex;
+    flex-direction: column;
+    float:left; 
+    font-size: 1.2rem;
+    margin-left:30px; 
+}
+
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse; 
+}
+
+.star-rating label {
+    cursor: pointer;
+    font-size: 1.3rem;
+    color:black; 
+}
+
+.star-rating input{
+    display:none; 
+}
+
+.star-rating label:hover, 
+.star-rating label:hover ~ label{
+    color:gold; 
+}
+
+.star-rating input:checked ~ label{
+    color:gold; 
+}
+
+.review-container{
+    display:flex; 
+    flex-direction:column; 
+    margin-top:25px; 
+    width:100%; 
+}
+.review-container textarea {
+    width: 100%;
+    padding: 10px;
+    padding-right:150px; 
+    font-size: 1rem;
+    border: 1px solid gray;
+    margin-top:10px; 
+}
+
+.btn-container{
+    display:flex; 
+    flex-direction: row;
+} 
+
+.btn-container button {
+    padding: 10px 20px; 
+    font-size:.9rem;
+    font-weight:700; 
+    border-radius: 25px; 
+}
+
+.submit-btn{
+    border: 1px solid white; 
+    background-color: #093f96;
+    color:white; 
+}
+
+.submit-btn:hover{
+    border: 1px solid #093f96; 
+    background-color: white;
+    color:#093f96; 
+    font-weight:700; 
+}
+
+.reset-btn{
+    border: 1px solid #093f96; 
+    background-color: white;
+    color:#093f96;
+    margin-left:25px; 
+}
+
+.reset-btn:hover{
+    background-color: #093f96;
+    color:white; 
+    font-weight:700; 
+}
