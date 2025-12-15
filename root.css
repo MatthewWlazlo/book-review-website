@@ -3,6 +3,7 @@ body{
     background-image: url('Images/photo-1719310469053-8c5c0c6803d3.jpeg'); 
     background-repeat: no-repeat;
     background-size: cover;
+    background-attachment: fixed; 
     min-height: 100vh; 
     margin: 0;
    }

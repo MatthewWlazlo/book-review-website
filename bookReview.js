@@ -1,5 +1,6 @@
 const http = require("http");
 const express = require("express");
+const pagesRouter = require("./routes/pages");
 const fs = require("fs");
 const { get } = require("https");
 const path = require("path");
@@ -29,6 +30,9 @@ app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
+
+//rendering pages with router
+app.use("/", pagesRouter);
 
 const server = app.listen(portNumber, () => {
   console.log(
@@ -62,28 +66,6 @@ mongoose
   })
   .catch((err) => console.log(err));
 
-//rendering pages
-
-app.get("/", (req, res) => {
-  res.render("home.ejs");
-});
-
-app.get("/home", (req, res) => {
-  res.render("home.ejs");
-});
-
-app.get("/lookup", (req, res) => {
-  res.render("lookup.ejs");
-});
-
-app.get("/review", (req, res) => {
-  res.render("review.ejs");
-});
-
-app.get("/about", (req, res) => {
-  res.render("about.ejs");
-});
-
 //lookup reviews for a book based on username or book title
 
 app.post("/lookup", async (req, res) => {
@@ -94,6 +76,7 @@ app.post("/lookup", async (req, res) => {
     Review.find({ "name": { $regex: pattern }}),
   ]);
   console.log("\nBook: " + book + "\nUser: " + username);
+  console.log("\nUsername" + username.name);
 
   let variables = {
     keyword: "",
@@ -109,10 +92,10 @@ app.post("/lookup", async (req, res) => {
     reviews.forEach((r) => {
       console.log("\nReached!");
       variables.reviews += `
-            Name: ${r.name}<br>
-            Email: ${r.email}<br>
-            Rating: ${r.rating}<br>
-            Review: ${r.review}<br><br>
+            <strong>Name: </strong>${r.name}<br>
+            <strong>Email: </strong>${r.email}<br>
+            <strong>Rating: </strong>${r.rating}<br>
+            <strong>Review: </strong>${r.review}<br><br>
           `;
     });
 
@@ -123,28 +106,34 @@ app.post("/lookup", async (req, res) => {
     const author = bookQuery.author;
     const summary = bookQuery.summary;
 
-    variables.book_info = `<h2>${title}</h2><br><h3>${author}</h3><br>${published}<br><br><strong>${summary}</strong>`;
+    variables.book_info = `<h3><strong>Title: </strong>${title}</h3>
+                            <h3><strong>Author(s): </strong>${author}</h3>
+                            <strong>Published: </strong>${published}<br>
+                            <strong>Summary: </strong>${summary}<br>`;
 
 
     console.log(variables);
     res.render("submit_lookup", variables);
-  } else if (username) {
+  } else if (username && username?.name !== undefined) {
+    console.log("\nReached username!");
     variables.keyword = search;
     username.forEach((r) => {
       variables.reviews += `
-          Name: ${r.name}<br>
-          Email: ${r.email}<br>
-          Title: ${r.title}<br>
-          Author: ${r.author}<br>
-          Rating: ${r.rating}<br>
-          Review: ${r.review}<br><br>
+          <strong>Name: </strong>${r.name}<br>
+          <strong>Email: </strong>${r.email}<br>
+          <strong>Title: </strong>${r.title}<br>
+          <strong>Author: </strong>${r.author}<br>
+          <strong>Rating: </strong>${r.rating}<br>
+          <strong>Review: </strong>${r.review}<br><br>
         `;
     });
 
     res.render("submit_lookup", variables);
   } else {
+    console.log("\nReached no results!");
     variables.keyword = search;
     variables.reviews = `<h2>No results found!</h2><br><br>`;
+    console.log(variables.reviews);
 
     res.render("submit_lookup", variables);
   }
