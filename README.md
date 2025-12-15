@@ -38,10 +38,10 @@ Use form to submit review, store reviews in MongoDB, look up review from name or
 
 
 ### Meet again Sunday 12/7
-            Submitted by: Rose Smith (superterp)
-            Group Members: Rose Smith (superterp), Peter Santos (pmegaterp)
-            App Description: Allow users to find images, songs of an author, and store/retrieve the results.
+            Submitted by: Matthew Wlazlo
+            Group Members: Alexis Tungcod, Europa Roso, Matthew Wlazlo, Nicholas Nash
+            App Description: Allows users to submit reviews for a book, look up reviews by title, or look up reviews by user who's submitted reviews.
             YouTube Video Link: https://www.youtube.com/MyAmazingAPP
-            APIs: VideoApp (http:notrealvideoapp.what), SoundApp (http:notreadlsoundapp.what)
-            Contact Email:  superterp@notreal.address.what
+            APIs: https://openlibrary.org/developers/api
+            Contact Email:  mwlazlo@terpmail.umd.edu
             Deployed App Link: https://notreal.what.terpNel/myApp
