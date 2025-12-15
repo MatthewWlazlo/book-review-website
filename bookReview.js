@@ -152,32 +152,53 @@ app.post("/lookup", async (req, res) => {
 
 //submits review to database
 
-app.post("/submit_review", async (req, res) => {
+app.post("/submit_review", async (req, res) => { // Need to update this so reviews for books that are already in the database get added to that entries review list
 
   const { name, email, title, author, rating, review } = req.body;
   //gather data from API
   // need publishing date and summary
-  const book = searchBook(title);
   console.log("Searching for book...\n");
   console.log(`Name:  ${name}\n`);
   try {
     const results = await searchBook(title);
     const picked = results?.[0] || {}
-    
-    const book_data = new Book({
-      title: title,
-      published: picked.published,
-      author: author,
-      summary: picked.summary,
-      reviews: [
+    const pattern = new RegExp(`^${title}$`, "i");
+    const bookExists = await Book.findOne({ "title": { $regex: pattern }});
+
+    if (bookExists){
+      await Book.updateOne(
+        { _id: bookExists._id },
         {
-          name: name,
-          email: email,
-          rating: rating,
-          review: review,
-        },
-      ],
-    });
+          $push: {
+            reviews: {
+              name,
+              email,
+              rating,
+              review
+            }
+          }
+        }
+      );
+    } else {
+        const book_data = new Book({
+        title: title,
+        published: picked.published,
+        author: author,
+        summary: picked.summary,
+        reviews: [
+          {
+            name: name,
+            email: email,
+            rating: rating,
+            review: review,
+          },
+        ],
+      });
+      await book_data.save();
+      console.log("\nSaved book!");
+    }
+    
+    
     console.log("Created book schema");
     const review_data = new Review({
       name: name,
@@ -188,9 +209,8 @@ app.post("/submit_review", async (req, res) => {
       review: review,
     });
     console.log("\nCreated review schema");
-    await book_data.save();
     await review_data.save();
-    console.log("\nSaved!");
+    console.log("\nSaved review!");
   } catch (e) {
     console.error("Submit review failed:", e);
     res.status(500).send("Error saving review");

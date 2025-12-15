@@ -10,7 +10,7 @@
 .form-container{
     background-color: white;
     width: 40%;
-    height:75%; 
+    height: fit-content; 
 }
 
 .text-container{
