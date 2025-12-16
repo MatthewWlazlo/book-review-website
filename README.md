@@ -15,7 +15,7 @@ Use form to submit review, store reviews in MongoDB, look up review from name or
 # Europa
 - Submit Review Page
 # Matt
-- Look up Page, template stuff
+- Submit/Look up Page, mongoDB and template stuff
 # Nick
 - Home Page
 - CSS Theme
